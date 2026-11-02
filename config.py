@@ -1,26 +1,52 @@
 """Shared configuration for ingest.py and agent.py"""
 
 from pathlib import Path
+import pyaudio
 
-# Folder where you drop PDFs to be ingested
+# ===============
+# FILE PATHS
+# ===============
 DOCS_DIR = Path("docs")
-
-# Where the FAISS vector index is stored on disk
 FAISS_INDEX_DIR = Path("faiss_index")
-
-# Tracks which files (and versions of files) have already been embedded,
-# so ingest.py can skip/append instead of rebuilding everything from scratch
 MANIFEST_PATH = Path("manifest.json")
 
-# Embedding model served by Ollama (must be pulled locally: `ollama pull bge-m3`)
+# ===============
+# EMBEDDING & RETRIEVAL
+# ===============
 EMBEDDING_MODEL = "bge-m3"
-
-# Chat model served via NVIDIA NIM
-CHAT_MODEL = "nvidia/nemotron-3-super-120b-a12b"
-
-# Chunking settings
+RETRIEVAL_K = 3
+# ===============
+# CHUNKING SETTINGS
+# ===============
 CHUNK_SIZE = 1000
 CHUNK_OVERLAP = 200
+BATCH_SIZE = 16
 
-# How many chunks to retrieve per query
-RETRIEVAL_K = 3
+# ===============
+# AUDIO CONFIGURATION
+# ===============
+AUDIO_FORMAT = pyaudio.paInt16
+AUDIO_CHANNELS = 1
+AUDIO_RATE = 16000
+AUDIO_CHUNK_SIZE = 512
+AUDIO_SILENCE_THRESHOLD = 2.0
+# ===============
+# GEMINI LIVE SETTINGS
+# ===============
+GEMINI_MODEL = "gemini-3.8-live"
+
+SYSTEM_INSTRUCTION = (
+    "You are a helpful assistant who answers questions accurately "
+    "by referring to the provided documents using the search_docs tool. "
+    "After you search the documents and get results, ALWAYS synthesize and speak "
+    "a clear, natural response using the information found. "
+    "Speak in a conversational, natural human tone. If the answer isn't "
+    "in the documents, say so instead of guessing. "
+    "Your responses must be spoken aloud - always provide audio output."
+)
+
+# ===============
+# LOGGING
+# ===============
+LOG_LEVEL = "INFO"
+LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
